@@ -1,12 +1,3 @@
-//Viktoriya Petrova
-//CS333
-//Lab3
-
-//This program creates a Unix shell that is capable of executing commands in the background
-//and in the foreground. It is also capable of handling the built it command "exit" which
-//causes the program to terminate. The program will wait for all children processes to be
-//done executing prior to terminating. It cannot handle any built in commands other than "exit".
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,8 +6,6 @@
 #include <signal.h>
 #include <stdbool.h>
 
-
-//This function gets the input from the user and allocates it into dynamic memory
 char* get_input(){
     char src[4096];
 
@@ -38,8 +27,6 @@ char* get_input(){
     return input;
 }
 
-//This function counts the number of words in the user input so that the
-//proper amount of dynamic memory can me allocated for the silly_argv array.
 int word_count(char *input){
     int wc = 0;
     bool letter = false;
@@ -56,10 +43,6 @@ int word_count(char *input){
     return wc;
 }
 
-//This function parses the user input into the silly_argv array. It also
-//counts the number of silly_argv indices as it's parsing and returns it
-//to main. Lastly, it makes sure that the last index of the array is set
-//to NULL before returning.
 int get_args(char *input, char **silly_argv){
     char *token;
     int i = 0;
@@ -74,9 +57,6 @@ int get_args(char *input, char **silly_argv){
     return i;
 }
 
-//Signal handler for the SIGCHLD signal. This function
-//is used by the background processes. It reaps any child
-//process that has exited -1.
 void sigchld_handler(int signum){
     int status;
     pid_t pid;
@@ -84,10 +64,6 @@ void sigchld_handler(int signum){
     while((pid = waitpid(-1, &status, WNOHANG)) > 0) {}
 }
 
-//This function waits for all background processes to finish
-//when "exit" is called in the parent process. If there are running
-//background processes this function will pause the parent execution
-//until the children exit and are reaped properly.
 void exit_wait(){
     int status;
     pid_t pid;
@@ -97,9 +73,6 @@ void exit_wait(){
     printf("Done.\nGoodbye!\n");
 }
 
-//This function executes commands in the foreground. The parent
-//process waits until the child is done executing the command before
-//continuing.
 void run_foreground(pid_t child_pid, char **silly_argv){
     int status;
 
@@ -117,9 +90,6 @@ void run_foreground(pid_t child_pid, char **silly_argv){
     }
 }
 
-//This function executes commands in the background. The parent
-//process does not wait for the child to be done executing before
-//continuing.
 void run_background(pid_t child_pid, char **silly_argv){
     int status;
 
@@ -137,12 +107,6 @@ void run_background(pid_t child_pid, char **silly_argv){
     }
 }
 
-//This function is responsible for setting up the signal handler
-//that reaps children which execute background processes. It also contains
-//the call for "fork" to create all children processes needed. Lastly,
-//it checks all commands for the "&" to see if they should be run in the
-//foreground or background. Afterwards it calls the appropriate functions
-//to execute the commands.
 void create_fork(int silly_argc, char **silly_argv){
 
     //Signal Handling
@@ -172,11 +136,11 @@ void create_fork(int silly_argc, char **silly_argv){
 }
 
 int main(int argc, char *argv[]){
-    bool flag = false;               //Did the user call "exit" in the parent process?
-    int index;                       //Aids in dynamic memory allocation for silly_argv
-    int silly_argc;                  //Size of silly_argv array
-    char **silly_argv;               //Parsed command line input
-    char *input;                     //Command line input
+    bool flag = false;
+    int index;
+    int silly_argc;
+    char **silly_argv;
+    char *input;
 
     do{
         input = get_input();
